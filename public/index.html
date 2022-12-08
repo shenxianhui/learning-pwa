@@ -4,13 +4,17 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="/manifest.json" />
+		<link rel="stylesheet" href="./style.css">
+    <link rel="manifest" href="./manifest.json" />
     <title>一言</title>
   </head>
   <body>
+		<img src="./img/book.png" alt="书">
     <p id="content"></p>
     <button id="button" onclick="onClick(event)">一言</button>
+		<div id="js-loading" class="loading"></div>
 
-    <script src="./js/index.js"></script>
+    <script type="text/javascript" src="./base64util.js"></script>
+    <script src="./index.js"></script>
   </body>
 </html>

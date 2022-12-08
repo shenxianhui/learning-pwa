@@ -1,7 +1,7 @@
 {
-  "name": "金卡智能",
-  "short_name": "金卡",
-  "description": "每日一言APP",
+  "name": "每日一言",
+  "short_name": "一言",
+  "description": "美好生活, 从一言开始!",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",

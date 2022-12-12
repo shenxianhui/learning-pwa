@@ -1,19 +1,77 @@
 const router = require('koa-router')()
+const { koaBody } = require('koa-body')
+const webpush = require('web-push')
+const util = require('../util')
 
-router.get('/', async (ctx, next) => {
-  await ctx.render('index', {
-    title: 'Hello Koa 2!'
-  })
-})
+// 使用web-push进行消息推送
+const options = {
+  proxy: 'http://34.82.107.67' // 使用FCM（Chrome）需要配置代理 https://www.freeproxylists.net/zh/
+}
 
-router.get('/string', async (ctx, next) => {
-  ctx.body = 'koa2 string'
-})
+// VAPID
+const VAPIDKeys = {
+	publicKey: 'BOEQSjdhorIf8M0XFNlwohK3sTzO9iJwvbYU-fuXRF0tvRpPPMGO6d_gJC_pUQwBT7wD8rKutpNTFHOHN3VqJ0A',
+	privateKey: 'TVe_nJlciDOn130gFyFYP8UiGxxWd3QdH6C5axXpSgM'
+}
 
-router.get('/json', async (ctx, next) => {
-  ctx.body = {
-    title: 'koa2 json'
+// 设置 web-push 的 VAPID 值
+webpush.setVapidDetails(
+  'mailto:shenxh0928@gmail.com',
+  VAPIDKeys.publicKey,
+  VAPIDKeys.privateKey,
+)
+
+/**
+ * @description: 提交 subscription 信息，并保存
+ * @return {*}
+ */
+router.post('/subscription', koaBody(), async (ctx) => {
+  let body = ctx.request.body
+  await util.saveRecord(body)
+  ctx.response.body = {
+    success: true,
   }
 })
+
+/**
+ * @description: 消息推送API，可以在管理后台进行调用
+ * @return {*}
+ */
+router.post('/push', koaBody(), async (ctx) => {
+	const data = ctx.request.body
+  let { uniqueid } = data
+  let list = uniqueid ? await util.find({ uniqueid }) : await util.findAll()
+
+  for (let i = 0; i < list.length; i++) {
+    let subscription = list[i].subscription
+    pushMessage(subscription, JSON.stringify(data))
+  }
+
+  ctx.response.body = {
+    data: list,
+  }
+})
+
+/**
+ * 向push service推送信息
+ * @param {*} subscription
+ * @param {*} data
+ */
+function pushMessage(subscription, data = {}) {
+  webpush
+    .sendNotification(subscription, data, options)
+    .then((res) => {
+      console.log('push service的相应数据:', JSON.stringify(res))
+      return
+    })
+    .catch((err) => {
+      // 判断状态码，440和410表示失效
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        return util.remove(subscription)
+      } else {
+        console.log('失败', err)
+      }
+    })
+}
 
 module.exports = router

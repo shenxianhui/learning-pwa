@@ -23,7 +23,7 @@ self.addEventListener('fetch', function (e) {
   // 需要缓存的xhr请求
   var cacheRequestUrls = ['/hitokoto']
 
-  console.log('现在正在请求：' + e.request.url)
+  // console.log('现在正在请求：' + e.request.url)
 
   // 判断当前请求是否需要缓存
   var needCache = cacheRequestUrls.some(function (url) {
@@ -74,4 +74,16 @@ self.addEventListener('activate', function (e) {
   e.waitUntil(cachePromise)
 
   return self.clients.claim()
+})
+
+// 监听 push 事件
+self.addEventListener('push', function (e) {
+  var data = e.data
+
+  if (e.data) {
+    data = data.json()
+    console.log('push 的数据为：', data)
+  } else {
+    console.log('没有 push 任何数据')
+  }
 })

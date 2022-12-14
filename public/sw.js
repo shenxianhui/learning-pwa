@@ -78,12 +78,62 @@ self.addEventListener('activate', function (e) {
 
 // 监听 push 事件
 self.addEventListener('push', function (e) {
-  var data = e.data
+  const { data } = e
 
-  if (e.data) {
-    data = data.json()
-    console.log('push 的数据为：', data)
+  if (!data) return
+
+  // 解析获取推送消息
+  let payload = data.json()
+  // 根据推送消息生成桌面通知并展现出来
+  let title = payload.title
+  let options = {
+    body: payload.body || '新消息',
+    icon: payload.icon || '/img/icons/book-128.png',
+    data: {
+      url: payload.url,
+    },
+    actions: [
+      {
+        action: 'browse',
+        title: '去看看',
+      },
+      {
+        action: 'contact-me',
+        title: '联系我',
+      },
+    ],
+    tag: 'pwa-starter',
+    renotify: true,
+  }
+  let promise = self.registration.showNotification(title, options)
+
+  e.waitUntil(promise)
+})
+
+// 监听通知点击事件
+self.addEventListener('notificationclick', function (e) {
+  const { notification = {}, action } = e
+  const { data = {} } = notification
+  const { url = '' } = data
+
+  console.log('用户点击: ', action)
+  // 关闭窗口
+  e.notification.close()
+  // 打开网页
+  if (action === 'contact-me') {
+    e.waitUntil(clients.openWindow('mailto:shenxh0928@gmail.com'))
   } else {
-    console.log('没有 push 任何数据')
+    e.waitUntil(
+      // 获取所有clients
+      self.clients.matchAll().then(function (clientsList) {
+        // 切换到该站点的tab
+        clientsList &&
+          clientsList.length &&
+          clientsList[0].focus &&
+          clientsList[0].focus()
+
+        self.clients.openWindow(url)
+      }),
+    )
   }
 })

@@ -5,13 +5,14 @@ const util = require('../util')
 
 // 使用web-push进行消息推送
 const options = {
-  proxy: 'http://34.82.107.67' // 使用FCM（Chrome）需要配置代理 https://www.freeproxylists.net/zh/
+  proxy: 'http://34.82.107.67', // 使用FCM（Chrome）需要配置代理 https://www.freeproxylists.net/zh/
 }
 
 // VAPID
 const VAPIDKeys = {
-	publicKey: 'BOEQSjdhorIf8M0XFNlwohK3sTzO9iJwvbYU-fuXRF0tvRpPPMGO6d_gJC_pUQwBT7wD8rKutpNTFHOHN3VqJ0A',
-	privateKey: 'TVe_nJlciDOn130gFyFYP8UiGxxWd3QdH6C5axXpSgM'
+  publicKey:
+    'BOEQSjdhorIf8M0XFNlwohK3sTzO9iJwvbYU-fuXRF0tvRpPPMGO6d_gJC_pUQwBT7wD8rKutpNTFHOHN3VqJ0A',
+  privateKey: 'TVe_nJlciDOn130gFyFYP8UiGxxWd3QdH6C5axXpSgM',
 }
 
 // 设置 web-push 的 VAPID 值
@@ -38,7 +39,7 @@ router.post('/subscription', koaBody(), async (ctx) => {
  * @return {*}
  */
 router.post('/push', koaBody(), async (ctx) => {
-	const data = ctx.request.body
+  const data = ctx.request.body
   let { uniqueid } = data
   let list = uniqueid ? await util.find({ uniqueid }) : await util.findAll()
 
@@ -73,5 +74,12 @@ function pushMessage(subscription, data = {}) {
       }
     })
 }
+
+router.get('/sync', async (ctx, next) => {
+  console.log(`Hello ${ctx.request.query.name}, I have received your msg`)
+  ctx.response.body = {
+    status: 0,
+  }
+})
 
 module.exports = router

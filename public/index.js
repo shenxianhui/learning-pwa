@@ -1,7 +1,3 @@
-function onClick(e) {
-  getData()
-}
-
 function getData() {
   const contentDom = document.getElementById('content')
   var xhr = new XMLHttpRequest()

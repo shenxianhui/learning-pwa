@@ -5,11 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="favicon.ico" />
-    <title>一言</title>
+    <link rel="stylesheet" href="./style.css" />
+    <title>每日一言</title>
   </head>
   <body>
-    <button id="button" onclick="onClick(event)">一言</button>
-    <p id="content"></p>
+    <!-- <button id="button" onclick="onClick(event)">一言</button>
+    <p id="content"></p> -->
+    <header>
+      <span class="logo"></span>
+      <input id="js-search-input" placeholder="关键词查询…" />
+      <button id="js-search-btn" onclick="getData()">搜索</button>
+    </header>
+    <main>
+      <p id="content"></p>
+    </main>
 
     <script src="./index.js"></script>
   </body>
